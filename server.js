@@ -7,7 +7,6 @@ const port = process.env.PORT || 8000;
 const cors = require("cors");
 require("dotenv").config();
 
-app.use(cors());
 const DB_URI =
   "mongodb+srv://1234:1234@cluster0.t2vhtau.mongodb.net/?retryWrites=true&w=majority";
 
@@ -20,6 +19,7 @@ mongoose
   .catch((err) => console.log(err));
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/category", categoryRouter);
