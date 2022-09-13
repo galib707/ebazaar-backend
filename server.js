@@ -4,8 +4,10 @@ const authRouter = require("./routes/auth");
 const categoryRouter = require("./routes/category");
 const adRouter = require("./routes/ad");
 const port = process.env.PORT || 8000;
+const cors = require("cors");
 require("dotenv").config();
 
+app.use(cors());
 const DB_URI =
   "mongodb+srv://1234:1234@cluster0.t2vhtau.mongodb.net/?retryWrites=true&w=majority";
 
