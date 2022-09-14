@@ -24,4 +24,13 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/allcategories", async (req, res) => {
+  try {
+    const allCategories = await categoryModel.find({});
+    res.status(201).json(allCategories);
+  } catch (e) {
+    res.status(501).send(e.message);
+  }
+});
+
 module.exports = router;
