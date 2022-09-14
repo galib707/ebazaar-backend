@@ -14,6 +14,9 @@ const addSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  imageUrl: {
+    type: String,
+  },
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",

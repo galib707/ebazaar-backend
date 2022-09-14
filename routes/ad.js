@@ -1,8 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const adSchema = require("../models/ad");
-const mongoose = require("mongoose");
-router.post("/", async (req, res) => {
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, res, cb) {
+    cb(null, "public/upload");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.post("/", upload.single("image"), async (req, res) => {
   const {
     title,
     description,
@@ -13,6 +25,11 @@ router.post("/", async (req, res) => {
     buyer,
   } = req.body;
 
+  const image = req.file;
+
+  if (!title || !description || !price || !seller || !image || !category) {
+    return res.status(400).send("All fields are required");
+  }
   const newAdObj = new adSchema({
     title,
     description,
@@ -21,31 +38,32 @@ router.post("/", async (req, res) => {
     category,
     interestedBuyers,
     buyer,
+    imageUrl: "upload/" + image.filename,
   });
 
   try {
     const savedAd = await newAdObj.save();
-    res.status(201).send("ad uploaded");
+    return res.status(201).send(`ad uploaded with id ${savedAd._id}`);
   } catch (err) {
-    res.status(501).send(err.message);
+    return res.status(501).send(err.message);
   }
 });
 
 router.get("/alladds", async (req, res) => {
   try {
     const allAdds = await adSchema.find({}).populate("category");
-    res.status(200).send(allAdds);
+    return res.status(200).send(allAdds);
   } catch (error) {
-    res.send(501).send(error.message);
+    return res.send(501).send(error.message);
   }
 });
 router.get("/:id", async (req, res) => {
   const id = req.params.id.toString();
   try {
     const addDetails = await adSchema.findById(id);
-    res.status(200).send(addDetails);
+    return res.status(200).send(addDetails);
   } catch (error) {
-    res.status(501).send(error.message);
+    return res.status(501).send(error.message);
   }
 });
 
@@ -53,9 +71,9 @@ router.delete("/delete/:id", async (req, res) => {
   const id = req.params.id.toString();
   try {
     const deletedItem = await adSchema.findByIdAndDelete(id);
-    res.status(200).send(deletedItem);
+    return res.status(200).json(deletedItem);
   } catch (error) {
-    res.status(501).send(error.message);
+    return res.status(501).send(error.message);
   }
 });
 
@@ -63,9 +81,9 @@ router.get("/getuserAdds/:id", async (req, res) => {
   const id = req.params.id.toString();
   try {
     const addsPostedByASingleUser = await adSchema.find({ seller: id });
-    res.status(200).send(addsPostedByASingleUser);
+    return res.status(200).send(addsPostedByASingleUser);
   } catch (error) {
-    res.status(501).send(error.message);
+    return res.status(501).send(error.message);
   }
 });
 module.exports = router;
