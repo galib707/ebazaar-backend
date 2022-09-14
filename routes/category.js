@@ -32,5 +32,14 @@ router.get("/allcategories", async (req, res) => {
     res.status(501).send(e.message);
   }
 });
+router.get("/:eachCategory", async (req, res) => {
+  let categoryName = req.params.eachCategory;
+  try {
+    const allCategories = await categoryModel.find({});
+    res.status(201).json(allCategories);
+  } catch (e) {
+    res.status(501).send(e.message);
+  }
+});
 
 module.exports = router;

@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
 
 router.get("/alladds", async (req, res) => {
   try {
-    const allAdds = await adSchema.find({});
+    const allAdds = await adSchema.find({}).populate("category");
     res.status(200).send(allAdds);
   } catch (error) {
     res.send(501).send(error.message);
